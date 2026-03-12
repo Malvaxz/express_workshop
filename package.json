@@ -7,6 +7,10 @@
     "REST",
     "node.js"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Malvaxz/express_workshop.git"
+  },
   "license": "ISC",
   "author": "Diego Malvaez",
   "type": "commonjs",
