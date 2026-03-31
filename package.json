@@ -24,7 +24,12 @@
   },
   "homepage": "https://github.com/Malvaxz/express_workshop#readme",
   "dependencies": {
-    "express": "^5.2.1"
+    "body": "^5.1.0",
+    "body-parser": "^2.2.2",
+    "express": "^5.2.1",
+    "morgan": "^1.10.1",
+    "mysql": "^2.18.1",
+    "parce": "^1.2.8"
   },
   "devDependencies": {
     "nodemon": "^3.1.14"
