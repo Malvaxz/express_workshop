@@ -3,6 +3,7 @@ const morgan = require('morgan'); //dependencia de desarrollo para mostrar las p
 const express = require('express');
 const app = express();
 const pokemon = require('./routes/pokemon');
+const user = require('./routes/user');
 
 app.use(morgan("dev")); //middleware para mostrar las peticiones en consola, se puede configurar con diferentes formatos, 
 // "dev" es el formato de desarrollo, muestra el metodo, la url, el status y el tiempo de respuesta
@@ -27,6 +28,7 @@ app.get("/", (req, res, next) => {
 });
 
 app.use("/pokemon", pokemon);
+app.use("/user", user);
 
 app.use((req, res, next) => {
     return res.status(404).json({code: 404, message: "URL Not Found"});

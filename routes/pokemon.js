@@ -16,7 +16,7 @@ pokemon.post("/", async (req, res, next) => {
     return res.status(500).json({ code: 500, message: "Missing data" });
 });
 
-pokemon.delete('/id/:id', async (req, res, next) => {
+pokemon.delete('/:id', async (req, res, next) => {
     const id = req.params.id;
     // 1. Validamos el ID usando Regex dentro del controlador
     const valido = /^[0-9]{1,3}$/.test(id);
@@ -41,7 +41,7 @@ pokemon.delete('/id/:id', async (req, res, next) => {
 });
 
 // Ojo: Estoy usando /:id para seguir el estándar REST que vimos
-pokemon.put('/id/:id', async (req, res) => {
+pokemon.put('/:id', async (req, res) => {
     const id = req.params.id;
     const valido = /^[0-9]{1,3}$/.test(id);
     // 1. Validar el ID
@@ -72,7 +72,7 @@ pokemon.put('/id/:id', async (req, res) => {
     }
 });
 
-pokemon.patch('/id/:id', async (req, res) => {
+pokemon.patch('/:id', async (req, res) => {
     const id = req.params.id;
     const valido = /^[0-9]{1,3}$/.test(id);
     // 1. Validación de ID
@@ -115,7 +115,7 @@ pokemon.patch('/id/:id', async (req, res) => {
         if (result.affectedRows === 1) {
             // El 'changedRows' nos dice si realmente hubo un cambio (si no mandaron exactamente el mismo dato que ya estaba)
             if (result.changedRows === 0) {
-                 return res.status(200).json({ code: 200, message: "Pokemon encontrado, pero los datos eran los mismos. No se hicieron cambios." });
+                return res.status(200).json({ code: 200, message: "Pokemon encontrado, pero los datos eran los mismos. No se hicieron cambios." });
             }
             return res.status(200).json({ code: 200, message: "Pokemon patched successfully" });
         }
@@ -136,31 +136,40 @@ pokemon.get('/', async (req, res, next) => {
 //un bucle sin fin
 
 // La regex [0-9]{1,3} limita a máximo 3 dígitos
-pokemon.get('/id/:id', async (req, res) => {
-    const rawId = req.params.id; //el regex necesita verificar que el id es un numero, pero no lo convierte a numero, por eso se hace el parseInt
-    const id = parseInt(rawId);
-    // Validamos el rango numérico (1-722)
-    if (id >= 1 && id <= 722) {
-        const pkmn = await db.query("SELECT * FROM pokemon WHERE pok_id = ?", [id]);
-        if (pkmn.length > 0) {
-            return res.status(200).json({ code: 200, message: pkmn });
+// Ruta unificada para buscar por ID o por Nombre
+pokemon.get('/:identifier', async (req, res) => {
+    // Obtenemos el parámetro dinámico de la URL
+    const identifier = req.params.identifier;
+    try {
+        // ID
+        if (/^[0-9]{1,3}$/.test(identifier)) {
+            const id = parseInt(identifier);
+            if (id >= 1 && id <= 722) {
+                const pkmn = await db.query("SELECT * FROM pokemon WHERE pok_id = ?", [id]);
+                if (pkmn.length > 0) {
+                    return res.status(200).json({ code: 200, message: pkmn });
+                }
+            }
+            return res.status(404).json({ code: 404, message: "Pokemon not found by ID" });
         }
-    }
-    return res.status(404).json({ code: 404, message: "Pokemon not found" });
-});
-//manejor de rutas por nombre
-pokemon.get('/name/:name', async (req, res) => {
-    const name = req.params.name.toLowerCase();
-    //en este regex nos permite utilizar espacios
-    const valido = /^[A-Za-z\s]+$/.test(name);
-    if (valido) { //se manejan consultas en sql una vez que se utilicen las bd
-        const query = "SELECT * FROM pokemon WHERE LOWER(pok_name) = ?";
-        const pkmn = await db.query(query, [name.toLowerCase()]);
-        if (pkmn.length > 0) {
-            return res.status(200).json({ code: 200, message: pkmn });
+        //nombre
+        else if (/^[A-Za-z\s]+$/.test(identifier)) {
+            const name = identifier.toLowerCase();
+            const query = "SELECT * FROM pokemon WHERE LOWER(pok_name) = ?";
+            const pkmn = await db.query(query, [name]);
+            if (pkmn.length > 0) {
+                return res.status(200).json({ code: 200, message: pkmn });
+            }
+            return res.status(404).json({ code: 404, message: "Pokemon not found by Name" });
         }
+        else {
+            return res.status(400).json({ code: 400, message: "Parámetro de búsqueda inválido. Usa un ID numérico o un nombre." });
+        }
+
+    } catch (error) {
+        console.error("Error en DB:", error);
+        return res.status(500).json({ code: 500, message: "Error interno del servidor" });
     }
-    return res.status(404).json({ code: 404, message: "Pokemon not found, try with a valid name" });
 });
 
 module.exports = pokemon;
