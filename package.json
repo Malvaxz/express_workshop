@@ -25,6 +25,7 @@
   "homepage": "https://github.com/Malvaxz/express_workshop#readme",
   "dependencies": {
     "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
     "morgan": "^1.10.1",
     "mysql": "^2.18.1"
   },
