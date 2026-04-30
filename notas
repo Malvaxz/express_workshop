@@ -1,0 +1,12 @@
+/*
+GET PETICION GET DE UNA PAGINA WEB
+POST GUARDAR O PUBLICAR ALGO
+PATCH ACTUALIZAR PARCIALMENTE UN RECURSO
+PUT ACTUALIZAR  UN RECURSO COMPLETAMENTE
+DELETE ELIMINAR UN RECURSO
+Todos son soportados por express, pero no se pueden usar en el navegador, 
+para eso se necesita una herramienta como postman o insomnia
+Los doble puntos indican un variable dentro de la ruta, es decir, 
+el valor que se le ponga a name se va a guardar en req.params.name
+Un middlewsare es una función que se ejecuta antes de llegar a la ruta, se puede usar para validar datos, autenticar usuarios, etc.
+*/
